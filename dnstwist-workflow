@@ -1,0 +1,2145 @@
+{
+  "workflow": {
+    "unique_name": "definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV",
+    "name": "DNSTwist - Workflow - mfalcopa",
+    "title": "DNSTwist - Workflow - mfalcopa",
+    "type": "generic.workflow",
+    "base_type": "workflow",
+    "variables": [
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "local",
+          "name": "email-response",
+          "type": "datatype.string",
+          "is_required": false,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01ZC6DFT5WFX72RPuxNOXVSnX7p4VcboWsM",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "output",
+          "name": "twisted-domains-list",
+          "type": "datatype.string",
+          "is_required": false,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01YMNX6P778QP35JmUd3HVHRBIkCVnc1xjS",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "local",
+          "name": "results",
+          "type": "datatype.string",
+          "is_required": false,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01YMNX6P77KLK0ZwmLnIE9ncYwE98y62hfr",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "local",
+          "name": "temp-remaining",
+          "type": "datatype.string",
+          "is_required": false,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01YMNX6P77U5T4sRxTaV8RnZPlXYu827fcf",
+        "object_type": "variable_workflow"
+      }
+    ],
+    "properties": {
+      "atomic": {
+        "is_atomic": false
+      },
+      "delete_workflow_instance": false,
+      "description": "From a domain list, it will permute every domain and return the registered domains with those permutations. \nThen it will investigate such domains to find any event on the local network that has seen this cousin domains. \n\nIf so, it will send an email with the domain name and details.",
+      "display_name": "DNSTwist - Workflow - mfalcopa",
+      "runtime_user": {
+        "target_default": true
+      },
+      "target": {
+        "target_type": "web-service.endpoint",
+        "target_id": "definition_target_01X6ZIU5MZPWA5tRjyTqZvvFNbyPUWWhWom",
+        "execute_on_workflow_target": true
+      }
+    },
+    "object_type": "definition_workflow",
+    "actions": [
+      {
+        "unique_name": "definition_activity_01YMNX76UT6421IinjhtMdNdcD1QTIY7X84",
+        "name": "Split String",
+        "title": "Split cu-domains by comma",
+        "type": "core.splitstring",
+        "base_type": "activity",
+        "properties": {
+          "boundaries": [
+            {
+              "boundary": ","
+            }
+          ],
+          "continue_on_failure": false,
+          "display_name": "Split cu-domains by comma",
+          "input_string": "$global.variable_01X6X3RMY5LN35DlMEUXMyJvYdO4qUR1zIC.global.variable_01X6X3RMY5LN35DlMEUXMyJvYdO4qUR1zIC$",
+          "remove_empty": true,
+          "skip_execution": false
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_01YMNX77IFJDD6PRDRLcEmxmCBmbuT4lUyR",
+        "name": "Execute Python Script",
+        "title": "Get domains - python",
+        "type": "python3.script",
+        "base_type": "activity",
+        "properties": {
+          "action_timeout": 180,
+          "continue_on_failure": false,
+          "display_name": "Get domains - python",
+          "script": "temp = \"$global.variable_01X6X3RMY5LN35DlMEUXMyJvYdO4qUR1zIC.global.variable_01X6X3RMY5LN35DlMEUXMyJvYdO4qUR1zIC$\"\nh = temp.split(\",\")\n",
+          "script_queries": [
+            {
+              "script_query": "h",
+              "script_query_name": "h",
+              "script_query_type": "string"
+            }
+          ],
+          "skip_execution": true
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_01YMNX7841QFH3U3TPGPexoTTTqT6T6BQSA",
+        "name": "For Each",
+        "title": "For Each",
+        "type": "logic.for_each",
+        "base_type": "activity",
+        "properties": {
+          "continue_on_failure": false,
+          "display_name": "For Each",
+          "skip_execution": false,
+          "source_array": "$activity.definition_activity_01YMNX76UT6421IinjhtMdNdcD1QTIY7X84.output.parts$"
+        },
+        "object_type": "definition_activity",
+        "actions": [
+          {
+            "unique_name": "definition_activity_01YMNX7CLIVE73UBfNYWIHkxb6wYYUKnAlh",
+            "name": "Get Session Status",
+            "title": "Get Session Status",
+            "type": "workflow.sub_workflow",
+            "base_type": "subworkflow",
+            "properties": {
+              "continue_on_failure": false,
+              "description": "This will return \"remaining\" number of domains to be processed and ready to return",
+              "display_name": "Get Session Status",
+              "input": {
+                "variable_workflow_01YMNX6QRP82P0ly735mxskfv92cpuFaGcL": "$activity.definition_activity_01YMNX79R1QHX34gHaR81OatiLDtkz6pXRF.output.variable_workflow_01YMNX6QTR4W971O8LLRpntjcyosiI3WpVZ$"
+              },
+              "runtime_user": {
+                "target_default": true
+              },
+              "skip_execution": false,
+              "target": {
+                "execute_on_this_target": true,
+                "target_id": "definition_target_01X6ZIU5MZPWA5tRjyTqZvvFNbyPUWWhWom",
+                "target_type": "web-service.endpoint"
+              },
+              "workflow_id": "definition_workflow_01YMNX6QEAQI13OzLfj49fLlO4Ij7ifdfFY",
+              "workflow_name": "Copy(1)-Get Session Status"
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX7DLJ3HF5j0PZfO2eKblHXaXzRA2DM",
+            "name": "Set Variables",
+            "title": "Set remaining",
+            "type": "core.set_multiple_variables",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "description": "update 'remaining' local variable",
+              "display_name": "Set remaining",
+              "skip_execution": false,
+              "variables_to_update": [
+                {
+                  "variable_to_update": "$workflow.definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV.local.variable_workflow_01YMNX6P77U5T4sRxTaV8RnZPlXYu827fcf$",
+                  "variable_value_new": "$activity.definition_activity_01YMNX7CLIVE73UBfNYWIHkxb6wYYUKnAlh.output.variable_workflow_01YMNX6QRPQA06gGQ1U1zF0QmOzrckB5Er8$"
+                }
+              ]
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX7EF7MA253nETchVSxYqFwDDWkxnqj",
+            "name": "While Loop",
+            "title": "While Loop",
+            "type": "logic.while",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "description": "Wait until the remaining number is 0. Meaning all the domains have been analysed and processed. ",
+              "display_name": "While Loop",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "blocks": [
+              {
+                "unique_name": "definition_activity_01YMNX7ES9PJS37SnjEItgbUFwcwFxGxrc1",
+                "name": "Condition Branch",
+                "title": "Is DNSTwist processing?",
+                "type": "logic.condition_block",
+                "base_type": "activity",
+                "properties": {
+                  "condition": {
+                    "left_operand": "$workflow.definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV.local.variable_workflow_01YMNX6P77U5T4sRxTaV8RnZPlXYu827fcf$",
+                    "operator": "ne",
+                    "right_operand": "0"
+                  },
+                  "continue_on_failure": false,
+                  "display_name": "Is DNSTwist processing?",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity",
+                "actions": [
+                  {
+                    "unique_name": "definition_activity_01YMNX7FESP6G3QVRBAnVSOtw3LsqTsizdc",
+                    "name": "Sleep",
+                    "title": "Sleep",
+                    "type": "core.sleep",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Sleep",
+                      "skip_execution": false,
+                      "sleep_interval": 5
+                    },
+                    "object_type": "definition_activity"
+                  },
+                  {
+                    "unique_name": "definition_activity_01YMNX7G0NGS60WquSarCMzEpqnUYFx3NDS",
+                    "name": "Get Session Status",
+                    "title": "Get Session Status",
+                    "type": "workflow.sub_workflow",
+                    "base_type": "subworkflow",
+                    "properties": {
+                      "continue_on_failure": true,
+                      "display_name": "Get Session Status",
+                      "input": {
+                        "variable_workflow_01YMNX6QRP82P0ly735mxskfv92cpuFaGcL": "$activity.definition_activity_01YMNX79R1QHX34gHaR81OatiLDtkz6pXRF.output.variable_workflow_01YMNX6QTR4W971O8LLRpntjcyosiI3WpVZ$"
+                      },
+                      "runtime_user": {
+                        "target_default": true
+                      },
+                      "skip_execution": false,
+                      "target": {
+                        "execute_on_this_target": true,
+                        "target_id": "definition_target_01X6ZIU5MZPWA5tRjyTqZvvFNbyPUWWhWom",
+                        "target_type": "web-service.endpoint"
+                      },
+                      "workflow_id": "definition_workflow_01YMNX6QEAQI13OzLfj49fLlO4Ij7ifdfFY",
+                      "workflow_name": ""
+                    },
+                    "object_type": "definition_activity"
+                  },
+                  {
+                    "unique_name": "definition_activity_01ZXEHNXXA2BD0VC6wsRMJQ0sCOmGIatLE6",
+                    "name": "Condition Block",
+                    "title": "Was the request successful?",
+                    "type": "logic.if_else",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Was the request successful?",
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity",
+                    "blocks": [
+                      {
+                        "unique_name": "definition_activity_01ZXEHNY4B6FT02gCHEfYtVEjLf7YzLNAFn",
+                        "name": "Condition Branch",
+                        "title": "No",
+                        "type": "logic.condition_block",
+                        "base_type": "activity",
+                        "properties": {
+                          "condition": {
+                            "left_operand": {
+                              "left_operand": "$activity.definition_activity_01YMNX7G0NGS60WquSarCMzEpqnUYFx3NDS.output.error.code$",
+                              "operator": "eq",
+                              "right_operand": "503"
+                            },
+                            "operator": "or",
+                            "right_operand": {
+                              "left_operand": "$activity.definition_activity_01YMNX7G0NGS60WquSarCMzEpqnUYFx3NDS.output.error.code$",
+                              "operator": "eq",
+                              "right_operand": "404"
+                            }
+                          },
+                          "continue_on_failure": false,
+                          "display_name": "No",
+                          "skip_execution": false
+                        },
+                        "object_type": "definition_activity",
+                        "actions": [
+                          {
+                            "unique_name": "definition_activity_01ZXEIENK8JWO7VbIYcWWMthpkZVewntXZH",
+                            "name": "Continue",
+                            "title": "Continue to next domain",
+                            "type": "logic.continue",
+                            "base_type": "activity",
+                            "properties": {
+                              "continue_on_failure": false,
+                              "display_name": "Continue to next domain",
+                              "skip_execution": false
+                            },
+                            "object_type": "definition_activity"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "unique_name": "definition_activity_01YMNX7GTO1H31yRST3IDvoMVYgSGjCcBMC",
+                    "name": "Set Variables",
+                    "title": "update 'remaining'",
+                    "type": "core.set_multiple_variables",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "update 'remaining'",
+                      "skip_execution": false,
+                      "variables_to_update": [
+                        {
+                          "variable_to_update": "$workflow.definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV.local.variable_workflow_01YMNX6P77U5T4sRxTaV8RnZPlXYu827fcf$",
+                          "variable_value_new": "$activity.definition_activity_01YMNX7G0NGS60WquSarCMzEpqnUYFx3NDS.output.variable_workflow_01YMNX6QRPQA06gGQ1U1zF0QmOzrckB5Er8$"
+                        }
+                      ]
+                    },
+                    "object_type": "definition_activity"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "unique_name": "definition_activity_01YMNX7HF8IDU4XcjOVRWXCRGHlD152ZdBP",
+            "name": "HTTP Request",
+            "title": "HTTP Get domains - DNSTwist",
+            "type": "web-service.http_request",
+            "base_type": "activity",
+            "properties": {
+              "action_timeout": 180,
+              "allow_auto_redirect": true,
+              "allow_headers_redirect": false,
+              "continue_on_error_status_code": false,
+              "continue_on_failure": true,
+              "description": "Will get all registered permutations of a domain",
+              "display_name": "HTTP Get domains - DNSTwist",
+              "method": "GET",
+              "relative_url": "api/scans/$activity.definition_activity_01YMNX79R1QHX34gHaR81OatiLDtkz6pXRF.output.variable_workflow_01YMNX6QTR4W971O8LLRpntjcyosiI3WpVZ$/json",
+              "runtime_user": {
+                "target_default": true
+              },
+              "skip_execution": false,
+              "target": {
+                "use_workflow_target": true
+              }
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01ZC61E6I32TT6B0xPEfUHU9acPBQBdy9Br",
+            "name": "Condition Block",
+            "title": "Check if domain twist get was succesful",
+            "type": "logic.if_else",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Check if domain twist get was succesful",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "blocks": [
+              {
+                "unique_name": "definition_activity_01ZC61E6TFIB15tqR2yelVuJQGqXQuIMb32",
+                "name": "Condition Branch",
+                "title": "Domain twist failed",
+                "type": "logic.condition_block",
+                "base_type": "activity",
+                "properties": {
+                  "condition": {
+                    "left_operand": "$activity.definition_activity_01YMNX7HF8IDU4XcjOVRWXCRGHlD152ZdBP.output.error.code$",
+                    "operator": "eq",
+                    "right_operand": "400"
+                  },
+                  "continue_on_failure": false,
+                  "display_name": "Domain twist failed",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity",
+                "actions": [
+                  {
+                    "unique_name": "definition_activity_01ZC623KNNC3Q1JrlXIO5Q8ld1GvcpdID9k",
+                    "name": "Continue",
+                    "title": "Continue to next domain",
+                    "type": "logic.continue",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Continue to next domain",
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "unique_name": "definition_activity_01ZC62JHYJEE60DY4HhYvRcJtdLG1NtBucv",
+            "name": "Group",
+            "title": "Clean tw-domain results",
+            "type": "logic.group",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Clean tw-domain results",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "actions": [
+              {
+                "unique_name": "definition_activity_01ZC62UYYNUPF0PpJqq988ZI5F9LL7AJyxe",
+                "name": "Read Table from JSON",
+                "title": "Get tw-domain table",
+                "type": "corejava.read_table_from_json",
+                "base_type": "activity",
+                "properties": {
+                  "action_timeout": 180,
+                  "continue_on_failure": true,
+                  "description": "domain | fuzzer",
+                  "display_name": "Get tw-domain table",
+                  "input_json": "$activity.definition_activity_01YMNX7HF8IDU4XcjOVRWXCRGHlD152ZdBP.output.response_body$",
+                  "jsonpath_query": "$.",
+                  "persist_output": true,
+                  "populate_columns": false,
+                  "skip_execution": false,
+                  "table_columns": [
+                    {
+                      "column_name": "domain",
+                      "column_type": "string"
+                    },
+                    {
+                      "column_name": "fuzzer",
+                      "column_type": "string"
+                    }
+                  ]
+                },
+                "object_type": "definition_activity"
+              },
+              {
+                "unique_name": "definition_activity_01ZC63USNY3T24X1lBbE7ZzydTvXBE2nXYW",
+                "name": "Delete from Table",
+                "title": "Delete original domain",
+                "type": "core.deleterowfromtable",
+                "base_type": "activity",
+                "properties": {
+                  "action_timeout": 180,
+                  "continue_on_failure": false,
+                  "display_name": "Delete original domain",
+                  "input_table": "$activity.definition_activity_01ZC62UYYNUPF0PpJqq988ZI5F9LL7AJyxe.output.read_table_from_json$",
+                  "rows": {
+                    "rows_matching_criteria": true,
+                    "where_clause": "fuzzer == '*original'"
+                  },
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity"
+              },
+              {
+                "unique_name": "definition_activity_01ZC64F5CE3PQ0oXlxSzWWez3UwGu3d44uG",
+                "name": "Condition Block",
+                "title": "Are there any tw-domain results?",
+                "type": "logic.if_else",
+                "base_type": "activity",
+                "properties": {
+                  "continue_on_failure": false,
+                  "display_name": "Are there any tw-domain results?",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity",
+                "blocks": [
+                  {
+                    "unique_name": "definition_activity_01ZC64F5IXS645XuWczMwfvn01Sd87oKX4O",
+                    "name": "Condition Branch",
+                    "title": "yes",
+                    "type": "logic.condition_block",
+                    "base_type": "activity",
+                    "properties": {
+                      "condition": {
+                        "left_operand": "$activity.definition_activity_01ZC62UYYNUPF0PpJqq988ZI5F9LL7AJyxe.output.row_count$",
+                        "operator": "ne",
+                        "right_operand": 0
+                      },
+                      "continue_on_failure": false,
+                      "display_name": "yes",
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity",
+                    "actions": [
+                      {
+                        "unique_name": "definition_activity_01ZC64SPCZ8P96rr12BnRI7iuoKdrij3Ot2",
+                        "name": "For Each",
+                        "title": "For Each cu-domain",
+                        "type": "logic.for_each",
+                        "base_type": "activity",
+                        "properties": {
+                          "continue_on_failure": false,
+                          "display_name": "For Each cu-domain",
+                          "skip_execution": false,
+                          "source_array": "$activity.definition_activity_01YMNX76UT6421IinjhtMdNdcD1QTIY7X84.output.parts$"
+                        },
+                        "object_type": "definition_activity",
+                        "actions": [
+                          {
+                            "unique_name": "definition_activity_01ZC65RB3R1KU6EEVgVMkbo2FcC8GObgJkE",
+                            "name": "Delete from Table",
+                            "title": "Delete from table the legitimate domains",
+                            "type": "core.deleterowfromtable",
+                            "base_type": "activity",
+                            "properties": {
+                              "action_timeout": 180,
+                              "continue_on_failure": false,
+                              "display_name": "Delete from table the legitimate domains",
+                              "input_table": "$activity.definition_activity_01ZC62UYYNUPF0PpJqq988ZI5F9LL7AJyxe.output.read_table_from_json$",
+                              "rows": {
+                                "rows_matching_criteria": true,
+                                "where_clause": "domain == '$activity.definition_activity_01ZC64SPCZ8P96rr12BnRI7iuoKdrij3Ot2.input.source_array[@]$'"
+                              },
+                              "skip_execution": false
+                            },
+                            "object_type": "definition_activity"
+                          }
+                        ]
+                      },
+                      {
+                        "unique_name": "definition_activity_01ZC66M31Q1CU7F8nKUSgP6FDsUEgszhxnj",
+                        "name": "Condition Block",
+                        "title": "Are there any tw-domain left?",
+                        "type": "logic.if_else",
+                        "base_type": "activity",
+                        "properties": {
+                          "continue_on_failure": false,
+                          "display_name": "Are there any tw-domain left?",
+                          "skip_execution": false
+                        },
+                        "object_type": "definition_activity",
+                        "blocks": [
+                          {
+                            "unique_name": "definition_activity_01ZC66M37YH4C51LoFqng4UMuNw7dnNDQZ2",
+                            "name": "Condition Branch",
+                            "title": "No",
+                            "type": "logic.condition_block",
+                            "base_type": "activity",
+                            "properties": {
+                              "condition": {
+                                "left_operand": "$activity.definition_activity_01ZC62UYYNUPF0PpJqq988ZI5F9LL7AJyxe.output.row_count$",
+                                "operator": "eq",
+                                "right_operand": 0
+                              },
+                              "continue_on_failure": false,
+                              "display_name": "No",
+                              "skip_execution": false
+                            },
+                            "object_type": "definition_activity",
+                            "actions": [
+                              {
+                                "unique_name": "definition_activity_01ZC66YG0AIN84gWd377yIGqvWnDs0h5Lot",
+                                "name": "Continue",
+                                "title": "Continue to next domain",
+                                "type": "logic.continue",
+                                "base_type": "activity",
+                                "properties": {
+                                  "continue_on_failure": false,
+                                  "display_name": "Continue to next domain",
+                                  "skip_execution": false
+                                },
+                                "object_type": "definition_activity"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "unique_name": "definition_activity_01ZC64F5PBRY34VeHcK2Ta4yZktT3qyU3cp",
+                    "name": "Condition Branch",
+                    "title": "No",
+                    "type": "logic.condition_block",
+                    "base_type": "activity",
+                    "properties": {
+                      "condition": {
+                        "left_operand": "$activity.definition_activity_01ZC62UYYNUPF0PpJqq988ZI5F9LL7AJyxe.output.row_count$",
+                        "operator": "eq",
+                        "right_operand": 0
+                      },
+                      "continue_on_failure": false,
+                      "display_name": "No",
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity",
+                    "actions": [
+                      {
+                        "unique_name": "definition_activity_01ZC67OL1GSBI2hABA3jl6rLSsKmVIIxfLN",
+                        "name": "Continue",
+                        "title": "Continue",
+                        "type": "logic.continue",
+                        "base_type": "activity",
+                        "properties": {
+                          "continue_on_failure": false,
+                          "display_name": "Continue",
+                          "skip_execution": false
+                        },
+                        "object_type": "definition_activity"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "unique_name": "definition_activity_01ZC68GPV0M4D0JgefseUyxZJcIm0SSTCgw",
+            "name": "Group",
+            "title": "format domains to be investigated",
+            "type": "logic.group",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "format domains to be investigated",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "actions": [
+              {
+                "unique_name": "definition_activity_01ZC68SXUQL722AdKx5YufVQBGV54SHWw7s",
+                "name": "Read Table from JSON",
+                "title": "Create observable table",
+                "type": "corejava.read_table_from_json",
+                "base_type": "activity",
+                "properties": {
+                  "action_timeout": 180,
+                  "continue_on_failure": false,
+                  "display_name": "Create observable table",
+                  "input_json": "[]",
+                  "jsonpath_query": "$.",
+                  "persist_output": true,
+                  "populate_columns": false,
+                  "skip_execution": false,
+                  "table_columns": [
+                    {
+                      "column_name": "value",
+                      "column_type": "string"
+                    },
+                    {
+                      "column_name": "type",
+                      "column_type": "string"
+                    }
+                  ]
+                },
+                "object_type": "definition_activity"
+              },
+              {
+                "unique_name": "definition_activity_01ZC69IYZS64N5dq4QzsWCgYF1YPq1Xpw9R",
+                "name": "For Each",
+                "title": "For Each tw-domain",
+                "type": "logic.for_each",
+                "base_type": "activity",
+                "properties": {
+                  "continue_on_failure": false,
+                  "display_name": "For Each tw-domain",
+                  "skip_execution": false,
+                  "source_array": "$activity.definition_activity_01ZC62UYYNUPF0PpJqq988ZI5F9LL7AJyxe.output.read_table_from_json$"
+                },
+                "object_type": "definition_activity",
+                "actions": [
+                  {
+                    "unique_name": "definition_activity_01ZC6ABZYFEVO5QBrXfDOAQxHqwAnboio8d",
+                    "name": "Add Row to Table",
+                    "title": "Add Json row for URL type",
+                    "type": "core.addrowtotable",
+                    "base_type": "activity",
+                    "properties": {
+                      "action_timeout": 180,
+                      "continue_on_failure": false,
+                      "display_name": "Add Json row for URL type",
+                      "input_table": "$activity.definition_activity_01ZC68SXUQL722AdKx5YufVQBGV54SHWw7s.output.read_table_from_json$",
+                      "row": [
+                        {
+                          "key": "value",
+                          "type": "string",
+                          "value": "http://$activity.definition_activity_01ZC69IYZS64N5dq4QzsWCgYF1YPq1Xpw9R.input.source_array[@].domain$"
+                        },
+                        {
+                          "key": "type",
+                          "type": "string",
+                          "value": "url"
+                        }
+                      ],
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity"
+                  },
+                  {
+                    "unique_name": "definition_activity_01ZC6B8FNNCSU3jH3lseEu4tGQsOWH35j48",
+                    "name": "Add Row to Table",
+                    "title": "Add Json row for URL https type",
+                    "type": "core.addrowtotable",
+                    "base_type": "activity",
+                    "properties": {
+                      "action_timeout": 180,
+                      "continue_on_failure": false,
+                      "display_name": "Add Json row for URL https type",
+                      "input_table": "$activity.definition_activity_01ZC68SXUQL722AdKx5YufVQBGV54SHWw7s.output.read_table_from_json$",
+                      "row": [
+                        {
+                          "key": "value",
+                          "type": "string",
+                          "value": "https://$activity.definition_activity_01ZC69IYZS64N5dq4QzsWCgYF1YPq1Xpw9R.input.source_array[@].domain$"
+                        },
+                        {
+                          "key": "type",
+                          "type": "string",
+                          "value": "url"
+                        }
+                      ],
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity"
+                  },
+                  {
+                    "unique_name": "definition_activity_01ZC6BGATL4Z860kQXx7nAwSvGczGOsL94e",
+                    "name": "Add Row to Table",
+                    "title": "Add Json row for domain type",
+                    "type": "core.addrowtotable",
+                    "base_type": "activity",
+                    "properties": {
+                      "action_timeout": 180,
+                      "continue_on_failure": false,
+                      "display_name": "Add Json row for domain type",
+                      "input_table": "$activity.definition_activity_01ZC68SXUQL722AdKx5YufVQBGV54SHWw7s.output.read_table_from_json$",
+                      "row": [
+                        {
+                          "key": "value",
+                          "type": "string",
+                          "value": "$activity.definition_activity_01ZC69IYZS64N5dq4QzsWCgYF1YPq1Xpw9R.input.source_array[@].domain$"
+                        },
+                        {
+                          "key": "type",
+                          "type": "string",
+                          "value": "domain"
+                        }
+                      ],
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity"
+                  }
+                ]
+              },
+              {
+                "unique_name": "definition_activity_01ZC6BTI5ZQZ94uLLKg8DGFIxpgzPDMVw4W",
+                "name": "Select from Table",
+                "title": "Select from Observable Table",
+                "type": "core.selectfromtable",
+                "base_type": "activity",
+                "properties": {
+                  "action_timeout": 180,
+                  "columns": [
+                    {
+                      "column_name": "value",
+                      "column_type": "string"
+                    },
+                    {
+                      "column_name": "type",
+                      "column_type": "string"
+                    }
+                  ],
+                  "continue_on_failure": false,
+                  "display_name": "Select from Observable Table",
+                  "input_table": "$activity.definition_activity_01ZC68SXUQL722AdKx5YufVQBGV54SHWw7s.output.read_table_from_json$",
+                  "number_of_rows": {
+                    "all_rows": true
+                  },
+                  "persist_output": true,
+                  "skip_execution": false,
+                  "sorting": {
+                    "no_sort": true
+                  }
+                },
+                "object_type": "definition_activity"
+              },
+              {
+                "unique_name": "definition_activity_01ZC6CQ70DABC03aMDmpT76FeCEaiZwWErE",
+                "name": "JSONPath Query",
+                "title": "Get as a JSON",
+                "type": "corejava.jsonpathquery",
+                "base_type": "activity",
+                "properties": {
+                  "action_timeout": 180,
+                  "continue_on_failure": false,
+                  "display_name": "Get as a JSON",
+                  "input_json": "$activity.definition_activity_01ZC68SXUQL722AdKx5YufVQBGV54SHWw7s.output.response_body$",
+                  "jsonpath_queries": [
+                    {
+                      "jsonpath_query": "$",
+                      "jsonpath_query_name": "observablesJson",
+                      "jsonpath_query_type": "string"
+                    }
+                  ],
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity"
+              }
+            ]
+          },
+          {
+            "unique_name": "definition_activity_01YMNX7HXU6ZC4wlBzVIaz1XVIE3H0rMfP8",
+            "name": "JSONPath Query",
+            "title": "Get domains",
+            "type": "corejava.jsonpathquery",
+            "base_type": "activity",
+            "properties": {
+              "action_timeout": 180,
+              "continue_on_failure": true,
+              "display_name": "Get domains",
+              "input_json": "$activity.definition_activity_01YMNX7HF8IDU4XcjOVRWXCRGHlD152ZdBP.output.response_body$",
+              "jsonpath_queries": [
+                {
+                  "jsonpath_query": "$.[0:]['domain']",
+                  "jsonpath_query_name": "domain",
+                  "jsonpath_query_type": "string"
+                }
+              ],
+              "skip_execution": true
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX7IG7V0M12YuRZSZZndw2RQNIXBI5O",
+            "name": "Condition Block",
+            "title": "are there twisted domain registered?",
+            "type": "logic.if_else",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "are there twisted domain registered?",
+              "skip_execution": true
+            },
+            "object_type": "definition_activity",
+            "blocks": [
+              {
+                "unique_name": "definition_activity_01YPASGMQGAFE1qX17Wa1y1mgSdN3qfzyhq",
+                "name": "Condition Branch",
+                "title": "No",
+                "type": "logic.condition_block",
+                "base_type": "activity",
+                "properties": {
+                  "condition": {
+                    "left_operand": "$activity.definition_activity_01YMNX7HXU6ZC4wlBzVIaz1XVIE3H0rMfP8.output.error.code$",
+                    "operator": "eq",
+                    "right_operand": "400"
+                  },
+                  "continue_on_failure": false,
+                  "display_name": "No",
+                  "skip_execution": true
+                },
+                "object_type": "definition_activity",
+                "actions": [
+                  {
+                    "unique_name": "definition_activity_01YPASGMQH4720CiPcXz8DHlx3yGJ3KmksT",
+                    "name": "Continue",
+                    "title": "Continue to next domain",
+                    "type": "logic.continue",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Continue to next domain",
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "unique_name": "definition_activity_01YMNX7JU58VE3lXneTDu096XDZCvEBogc4",
+            "name": "Set Variables",
+            "title": "Set domains",
+            "type": "core.set_multiple_variables",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Set domains",
+              "skip_execution": true,
+              "variables_to_update": [
+                {
+                  "variable_to_update": "$workflow.definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV.output.variable_workflow_01YMNX6P778QP35JmUd3HVHRBIkCVnc1xjS$",
+                  "variable_value_new": "$activity.definition_activity_01YMNX7HXU6ZC4wlBzVIaz1XVIE3H0rMfP8.output.jsonpath_queries.domain$"
+                }
+              ]
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX7KCTGV070iScGa2pJkIJ4QvWlMUQM",
+            "name": "Execute Python Script",
+            "title": "Dump JSON to observable format list",
+            "type": "python3.script",
+            "base_type": "activity",
+            "properties": {
+              "action_timeout": 180,
+              "continue_on_failure": false,
+              "display_name": "Dump JSON to observable format list",
+              "script": "import json\nimport time\nimport requests\n\nx = $activity.definition_activity_01YMNX77IFJDD6PRDRLcEmxmCBmbuT4lUyR.output.script_queries.h$\nobservables = []\nif type(x) == str:\n  x = ['x']\nfor item in $workflow.definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV.output.variable_workflow_01YMNX6P778QP35JmUd3HVHRBIkCVnc1xjS$:\n  if item in x:\n    print(\"no lo agrega\")\n  else:\n    observables.append({\"value\":\"http://\"+item, \"type\":\"url\"})\n    observables.append({\"value\":item, \"type\":\"domain\"})\n\nprint(len(observables))\nobservablesJson = json.dumps(observables)",
+              "script_arguments": [
+                ""
+              ],
+              "script_queries": [
+                {
+                  "script_query": "observablesJson",
+                  "script_query_name": "observablesJson",
+                  "script_query_type": "string"
+                }
+              ],
+              "skip_execution": true
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX7L370JW6SS8CZScT6qEOztCyxVNAx",
+            "name": "Threat Response - Observe Observables",
+            "title": "Threat Response - Observe Observables",
+            "type": "workflow.sub_workflow",
+            "base_type": "subworkflow",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Threat Response - Observe Observables",
+              "input": {
+                "variable_workflow_01YMNX6R5NVF03xRvgBzLTXkXXqwGHWnOt5": "$activity.definition_activity_01ZC6CQ70DABC03aMDmpT76FeCEaiZwWErE.output.jsonpath_queries.observablesJson$"
+              },
+              "runtime_user": {
+                "target_default": true
+              },
+              "skip_execution": false,
+              "target": {
+                "no_target": true
+              },
+              "workflow_id": "definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u",
+              "workflow_name": "Copy(1)-Threat Response - Observe Observables"
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX7LTCS3K6S5YE490huvyJkGfUtIrti",
+            "name": "Set Variables",
+            "title": "Set sights",
+            "type": "core.set_multiple_variables",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Set sights",
+              "skip_execution": false,
+              "variables_to_update": [
+                {
+                  "variable_to_update": "$workflow.definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV.local.variable_workflow_01YMNX6P77KLK0ZwmLnIE9ncYwE98y62hfr$",
+                  "variable_value_new": "$activity.definition_activity_01YMNX7L370JW6SS8CZScT6qEOztCyxVNAx.output.variable_workflow_01YMNX6R5NK7X0OzIigtAwOfVkphtsR1o9X$"
+                }
+              ]
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01ZC6E9N2FN0G7TpvqG6soMmozV4mYdGw8f",
+            "name": "Read Table from JSON",
+            "title": "Parse results in table",
+            "type": "corejava.read_table_from_json",
+            "base_type": "activity",
+            "properties": {
+              "action_timeout": 180,
+              "continue_on_failure": false,
+              "display_name": "Parse results in table",
+              "input_json": "$workflow.definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV.local.variable_workflow_01YMNX6P77KLK0ZwmLnIE9ncYwE98y62hfr$",
+              "jsonpath_query": "$.",
+              "persist_output": true,
+              "populate_columns": false,
+              "skip_execution": false,
+              "table_columns": [
+                {
+                  "column_name": "observables",
+                  "column_type": "string"
+                },
+                {
+                  "column_name": "source",
+                  "column_type": "string"
+                },
+                {
+                  "column_name": "targets",
+                  "column_type": "string"
+                }
+              ]
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX7ME26F83ABdRBhsWIHnmOlPKjqSTX",
+            "name": "Condition Block",
+            "title": "Are there any sightings for this domain?",
+            "type": "logic.if_else",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Are there any sightings for this domain?",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "blocks": [
+              {
+                "unique_name": "definition_activity_01YMNX7MREQQ13Q1BXsiL097eQDFEeEeVqC",
+                "name": "Condition Branch",
+                "title": "Yes",
+                "type": "logic.condition_block",
+                "base_type": "activity",
+                "properties": {
+                  "condition": {
+                    "left_operand": "$activity.definition_activity_01ZC6E9N2FN0G7TpvqG6soMmozV4mYdGw8f.output.row_count$",
+                    "operator": "ne",
+                    "right_operand": 0
+                  },
+                  "continue_on_failure": false,
+                  "display_name": "Yes",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity",
+                "actions": [
+                  {
+                    "unique_name": "definition_activity_01ZC6FQ5EHQ9236feaEsD3ZKuinnQUAjDRP",
+                    "name": "For Each",
+                    "title": "For Each sighting",
+                    "type": "logic.for_each",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "For Each sighting",
+                      "skip_execution": false,
+                      "source_array": "$activity.definition_activity_01ZC6E9N2FN0G7TpvqG6soMmozV4mYdGw8f.output.read_table_from_json$"
+                    },
+                    "object_type": "definition_activity",
+                    "actions": [
+                      {
+                        "unique_name": "definition_activity_01ZC6GL7FR61U75IuXYPQ8SFbE9BCDGkpA4",
+                        "name": "JSONPath Query",
+                        "title": "Parse observable",
+                        "type": "corejava.jsonpathquery",
+                        "base_type": "activity",
+                        "properties": {
+                          "action_timeout": 180,
+                          "continue_on_failure": false,
+                          "display_name": "Parse observable",
+                          "input_json": "$activity.definition_activity_01ZC6FQ5EHQ9236feaEsD3ZKuinnQUAjDRP.input.source_array[@].observables$",
+                          "jsonpath_queries": [
+                            {
+                              "jsonpath_query": "$.[*].value",
+                              "jsonpath_query_name": "value",
+                              "jsonpath_query_type": "string"
+                            },
+                            {
+                              "jsonpath_query": "$.[*].type",
+                              "jsonpath_query_name": "type",
+                              "jsonpath_query_type": "string"
+                            },
+                            {
+                              "jsonpath_query": "$.[0].value",
+                              "jsonpath_query_name": "first",
+                              "jsonpath_query_type": "string"
+                            }
+                          ],
+                          "skip_execution": false
+                        },
+                        "object_type": "definition_activity"
+                      },
+                      {
+                        "unique_name": "definition_activity_01ZC6HKWCLGHJ3KnYmbcQrgZct3ydhYQJoq",
+                        "name": "JSONPath Query",
+                        "title": "Parse target",
+                        "type": "corejava.jsonpathquery",
+                        "base_type": "activity",
+                        "properties": {
+                          "action_timeout": 180,
+                          "continue_on_failure": false,
+                          "display_name": "Parse target",
+                          "input_json": "$activity.definition_activity_01ZC6FQ5EHQ9236feaEsD3ZKuinnQUAjDRP.input.source_array[@].targets$",
+                          "jsonpath_queries": [
+                            {
+                              "jsonpath_query": "$.[*].observables",
+                              "jsonpath_query_name": "target_obs",
+                              "jsonpath_query_type": "string"
+                            },
+                            {
+                              "jsonpath_query": "$.[*].observed_time",
+                              "jsonpath_query_name": "observed_time",
+                              "jsonpath_query_type": "string"
+                            }
+                          ],
+                          "skip_execution": false
+                        },
+                        "object_type": "definition_activity"
+                      },
+                      {
+                        "unique_name": "definition_activity_01ZC6I9V5776X2ImHTKFMeVzskHkpfRSEr8",
+                        "name": "Set Variables",
+                        "title": "Create email text",
+                        "type": "core.set_multiple_variables",
+                        "base_type": "activity",
+                        "properties": {
+                          "continue_on_failure": false,
+                          "display_name": "Create email text",
+                          "skip_execution": false,
+                          "variables_to_update": [
+                            {
+                              "variable_to_update": "$workflow.definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV.local.variable_workflow_01ZC6DFT5WFX72RPuxNOXVSnX7p4VcboWsM$",
+                              "variable_value_new": "$workflow.definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV.local.variable_workflow_01ZC6DFT5WFX72RPuxNOXVSnX7p4VcboWsM$\nObservables : $activity.definition_activity_01ZC6GL7FR61U75IuXYPQ8SFbE9BCDGkpA4.output.jsonpath_queries.value$\nType of observable: $activity.definition_activity_01ZC6GL7FR61U75IuXYPQ8SFbE9BCDGkpA4.output.jsonpath_queries.type$\nSource of sighting : $activity.definition_activity_01ZC6FQ5EHQ9236feaEsD3ZKuinnQUAjDRP.input.source_array[@].source$\nLocation in the network:\n$activity.definition_activity_01ZC6HKWCLGHJ3KnYmbcQrgZct3ydhYQJoq.output.jsonpath_queries.target_obs$\nObserved time: $activity.definition_activity_01ZC6HKWCLGHJ3KnYmbcQrgZct3ydhYQJoq.output.jsonpath_queries.observed_time$\nInvestigate URL: https://visibility.eu.amp.cisco.com/#/investigate?q=$activity.definition_activity_01ZC6GL7FR61U75IuXYPQ8SFbE9BCDGkpA4.output.jsonpath_queries.first$\n\n"
+                            }
+                          ]
+                        },
+                        "object_type": "definition_activity"
+                      }
+                    ]
+                  },
+                  {
+                    "unique_name": "definition_activity_01YMNX7OH6UTK4PIdzqRNFEr9Wtlog61AHg",
+                    "name": "Send Email",
+                    "title": "Send Email Alert ",
+                    "type": "email.smtp_send_email",
+                    "base_type": "activity",
+                    "properties": {
+                      "action_timeout": 180,
+                      "body": "Hey! \n\nIn our analysis we found an potential threat using a cousing domain of your registered domains.\nYou can click in the Investigate URL of each observable for more details on the incident.\n\nNote: \nObservable is the domain or url being investigated (cousin domain)\nLocation in the network will provide a list of nodes in your network that have seen this observable.\n\nPlease, find below the details:\n$workflow.definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV.local.variable_workflow_01ZC6DFT5WFX72RPuxNOXVSnX7p4VcboWsM$\n\nGo to your secureX Threat Response and check these observables.",
+                      "continue_if_one_address_valid": false,
+                      "continue_on_failure": true,
+                      "display_name": "Send Email Alert ",
+                      "runtime_user": {
+                        "override_target_runtime_user": true,
+                        "runtime_user_id": "definition_runtime_user_01YIC40AECE2S1JIurh2ZMaJmL5omk41k62"
+                      },
+                      "skip_execution": false,
+                      "subject": "Cousin Domain Alert for domain  $activity.definition_activity_01YMNX7841QFH3U3TPGPexoTTTqT6T6BQSA.input.source_array[@]$",
+                      "target": {
+                        "override_workflow_target": true,
+                        "target_id": "definition_target_01YIC4BXP7A7M0JKqowlaslj61CjYuLj9GB"
+                      },
+                      "to": "roberto.sanroman@gruposantander.com,mfalcopa@cisco.com"
+                    },
+                    "object_type": "definition_activity"
+                  },
+                  {
+                    "unique_name": "definition_activity_01ZC6KYEK26MA0arkMEXSWDBG3CVv5Qhd3T",
+                    "name": "Set Variables",
+                    "title": "Clean email response vble",
+                    "type": "core.set_multiple_variables",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Clean email response vble",
+                      "skip_execution": false,
+                      "variables_to_update": [
+                        {
+                          "variable_to_update": "$workflow.definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV.local.variable_workflow_01ZC6DFT5WFX72RPuxNOXVSnX7p4VcboWsM$",
+                          "variable_value_new": ""
+                        }
+                      ]
+                    },
+                    "object_type": "definition_activity"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "categories": [
+      "category_1BMfMXSnJMyt5Ihqi7rWJr5N8cf"
+    ]
+  },
+  "triggers": {
+    "triggerschedule_01YMO6XS1HNAA6TfmcdYBDI2Jr4qjjj4OCr": {
+      "workflow_id": "definition_workflow_01YMNX6P2FAEK3oBpdXGIlLcWWrIyBVdxeV",
+      "name": "test - cusin domains",
+      "title": "",
+      "lowercase_name": "schedule.test_-_cusin_domains",
+      "type": "schedule",
+      "base_type": "trigger",
+      "ref_id": "schedule_01YMO4TNDHE183af328Ep6XTQmRRmnovzfU",
+      "version": "1.0.0",
+      "disabled": false,
+      "unique_name": "triggerschedule_01YMO6XS1HNAA6TfmcdYBDI2Jr4qjjj4OCr",
+      "object_type": "triggerschedule"
+    }
+  },
+  "schedules": {
+    "schedule_01YMO4TNDHE183af328Ep6XTQmRRmnovzfU": {
+      "unique_name": "schedule_01YMO4TNDHE183af328Ep6XTQmRRmnovzfU",
+      "name": "Test - review cousin domain",
+      "type": "basic.schedule",
+      "base_type": "schedule",
+      "properties": {
+        "calendar": "calendar_recurring_1BMfMWvgiDhSjBQ7hTSyvz3NyVZ",
+        "timezone": "Europe/Brussels",
+        "starttime": "15:00",
+        "interval_hours": 0,
+        "interval_minutes": 0,
+        "number_of_times": 1,
+        "display_name": "Test - review cousin domain",
+        "description": ""
+      },
+      "version": "1.0.0",
+      "object_type": "schedule"
+    }
+  },
+  "targets": {
+    "definition_target_01IZMSUQSXQQ322hn1cq6jVmgbzS6X1NXEa": {
+      "unique_name": "definition_target_01IZMSUQSXQQ322hn1cq6jVmgbzS6X1NXEa",
+      "name": "CTR_For_Access_Token",
+      "title": "CTR Target for access token",
+      "type": "web-service.endpoint",
+      "base_type": "target",
+      "object_type": "definition_target",
+      "properties": {
+        "default_runtime_user_id": "definition_runtime_user_01IZMSTPVMBTB0EukhkCzHTn1tiFjMx6iZl",
+        "description": "CTR_For_Access_Token",
+        "disable_certificate_validation": false,
+        "display_name": "CTR_For_Access_Token",
+        "host": "visibility.eu.amp.cisco.com",
+        "no_runtime_user": false,
+        "path": "/iroh",
+        "protocol": "https"
+      }
+    },
+    "definition_target_01JR2Z682Y2J95D0LYQ5j0irprtyvwEMZtj": {
+      "unique_name": "definition_target_01JR2Z682Y2J95D0LYQ5j0irprtyvwEMZtj",
+      "name": "CTR_API",
+      "title": "CTR API Target",
+      "type": "web-service.endpoint",
+      "base_type": "target",
+      "object_type": "definition_target",
+      "properties": {
+        "description": "Target used to invoke iroh endpoints",
+        "disable_certificate_validation": false,
+        "display_name": "CTR_API",
+        "host": "visibility.eu.amp.cisco.com",
+        "no_runtime_user": true,
+        "path": "/iroh",
+        "protocol": "https"
+      }
+    },
+    "definition_target_01X6ZIU5MZPWA5tRjyTqZvvFNbyPUWWhWom": {
+      "unique_name": "definition_target_01X6ZIU5MZPWA5tRjyTqZvvFNbyPUWWhWom",
+      "name": "DNSTwist",
+      "title": "DNSTwist",
+      "type": "web-service.endpoint",
+      "base_type": "target",
+      "object_type": "definition_target",
+      "properties": {
+        "disable_certificate_validation": true,
+        "display_name": "DNSTwist",
+        "host": "dnstwist.it",
+        "ignore_proxy": true,
+        "no_runtime_user": true,
+        "protocol": "https"
+      }
+    },
+    "definition_target_01YIC4BXP7A7M0JKqowlaslj61CjYuLj9GB": {
+      "unique_name": "definition_target_01YIC4BXP7A7M0JKqowlaslj61CjYuLj9GB",
+      "name": "Outlook endpoint",
+      "title": "Outlook endpoint",
+      "type": "email.smtp_endpoint",
+      "base_type": "target",
+      "object_type": "definition_target",
+      "properties": {
+        "default_runtime_user_id": "definition_runtime_user_01YIC40AECE2S1JIurh2ZMaJmL5omk41k62",
+        "display_name": "Outlook endpoint",
+        "no_runtime_user": false,
+        "port": 587,
+        "protocol": "SMTP",
+        "server": "smtp-mail.outlook.com"
+      }
+    }
+  },
+  "runtime_users": {
+    "definition_runtime_user_01IZMSTPVMBTB0EukhkCzHTn1tiFjMx6iZl": {
+      "unique_name": "definition_runtime_user_01IZMSTPVMBTB0EukhkCzHTn1tiFjMx6iZl",
+      "name": "CTR_Credentials",
+      "title": "CTR_Credentials",
+      "description": "Account Key for CTR",
+      "type": "runtime_user.web-service_basic_credentials",
+      "base_type": "runtime_user",
+      "object_type": "definition_runtime_user",
+      "properties": {
+        "auth_option": "Basic",
+        "basic_password": "*****",
+        "basic_username": "client-8413b362-dd93-488e-ab55-09598191a7ff",
+        "display_name": "CTR_Credentials"
+      }
+    },
+    "definition_runtime_user_01YIC40AECE2S1JIurh2ZMaJmL5omk41k62": {
+      "unique_name": "definition_runtime_user_01YIC40AECE2S1JIurh2ZMaJmL5omk41k62",
+      "name": "Outlook Credentials",
+      "title": "Outlook Credentials",
+      "type": "runtime_user.email_credentials",
+      "base_type": "runtime_user",
+      "object_type": "definition_runtime_user",
+      "properties": {
+        "description": "SecureX notifications credential",
+        "display_name": "Outlook Credentials",
+        "password": "*****",
+        "sender": "securexnot@outlook.com"
+      }
+    }
+  },
+  "variables": {
+    "variable_01X6X3RMY5LN35DlMEUXMyJvYdO4qUR1zIC": {
+      "unique_name": "variable_01X6X3RMY5LN35DlMEUXMyJvYdO4qUR1zIC",
+      "properties": {
+        "value": "ext.santander.com.co,santander.com.co,produban.net,landmark-iberia.com,altecmx-santander.com,bancos3mexico.com.mx,ext.geoban.com.mx,externos.produban.com.mx,externos.santander.com.mx,externos.santandertec.mx,geoban.com.mx,isban.mx,mmartinez.com.mx,procesos.geoban.com.mx,produban.com.mx,santander.com.mx,santanderaccionistas.com,santander-serfin.com,santandertec.mx,servexternos.produban.com.mx,serviciosexternos.isban.mx,universia.net.mx,zurichsantander.com.mx,hcbe.eu,kiafinance.eu,hyundaifinance.eu,pre.hcbe.eu,santander-leasing.de,santander-direkt.de,santanderdirect.de,santander.de,extern.santander.de,santanderbank.de,comfortcardplus.de,getnet.mx,santanderconsumer.at,acceptcard.dk,bosfinans.no,elcon.no,financecorp.biz,fordcredit.dk,fordcredit.fi,fordcredit.no,fordcredit.se,gebyrfri.no,hondafinance.dk,minklassiker.se,nissanfinans.dk,renaultfinance.dk,santander.dk,santander.fi,santander.no,santander.se,santander24.dk,santanderconsumer.dk,santanderconsumer.fi,santanderconsumer.no,santanderconsumer.se,santanderconsumerbank.dk,santanderkort.no,santanderkredittkort.no,santanderreporting.no,shakebil.no,shft.fi,shft.no,extern.produban.de,produban.de,scbde.santander.de,srtde.santander.de,santander.com.pe,externos.santander.com.pe,allinone.fi,s3caceis.com.mx,wa-santander.com,de.hcs.com,santander-holding.de,einfachzahlen.santander.de,scbmail.santander.de,comfort-card.de,hyundaifinance.de,kiafinance.de,ibor.gruposantander.com,ext.santanderconsumer.co,santanderconsumer.co,santandercaceis.com.co,santandersc.com,scusa.us,bsantander.cl,externo.santanderconsumer.cl,getnet.cl,masmillas.cl,santanderinvestment.cl,servexternos.santander.cl,servexternos.santanderconsumer.cl,santanderpb.cl,santandersantiago.cl,superdigital.cl,santander.cl,santanderam.cl,santanderconsumer.cl,dte.santander.cl,superbank.com.br,contasuper.com.br,gruposuperdigital.com,superdigital.com.br,s3caceis.com.br,external.getneteurope.com,empresaexterna.com.mx,lynkcofinance.fr,pagonxt.com,servexternos.pagonxt.com,getneteurope.com,externos.santanderconsumer.com.pe,santanderconsumer.com.pe,surgir.com.pe,superdigital.com.ar,one-trade.com,extern.santanderconsumer.at,externos.surgir.com.pe,spotlight.mx,gruposantander.com.mx,santandercorretora.com.br,opendigitalservices.com,drivenoleggio.it,santanderconsumerrenting.it,santander.com,",
+        "scope": "global",
+        "name": "cu-domains",
+        "type": "datatype.string",
+        "is_required": false,
+        "is_invisible": false
+      },
+      "object_type": "variable"
+    }
+  },
+  "subworkflows": [
+    {
+      "workflow": {
+        "unique_name": "definition_workflow_01YMNX6QF1N543bvHa9pYjAS1uqzzxL0CrM",
+        "name": "Copy(1)-HTTP Session Creation - DNSTwist",
+        "title": "Copy(1)-HTTP Session Creation - DNSTwist",
+        "type": "generic.workflow",
+        "base_type": "workflow",
+        "variables": [
+          {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "",
+              "scope": "output",
+              "name": "SessionID",
+              "type": "datatype.string",
+              "is_required": false,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01YMNX6QTR4W971O8LLRpntjcyosiI3WpVZ",
+            "object_type": "variable_workflow"
+          },
+          {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "",
+              "scope": "input",
+              "name": "domain",
+              "type": "datatype.string",
+              "description": "domain to be twisted",
+              "is_required": false,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01YMNX6QTQTAM5MH6OViD9Bo9GwH4XhTSgX",
+            "object_type": "variable_workflow"
+          }
+        ],
+        "properties": {
+          "atomic": {
+            "is_atomic": false
+          },
+          "delete_workflow_instance": false,
+          "display_name": "Copy(1)-HTTP Session Creation - DNSTwist",
+          "runtime_user": {
+            "target_default": true
+          },
+          "target": {
+            "target_type": "web-service.endpoint",
+            "target_id": "definition_target_01X6ZIU5MZPWA5tRjyTqZvvFNbyPUWWhWom",
+            "execute_on_workflow_target": true
+          }
+        },
+        "object_type": "definition_workflow",
+        "actions": [
+          {
+            "unique_name": "definition_activity_01YMNX6SB873Z33kIQw52428TI5hi8CxWjs",
+            "name": "HTTP Request",
+            "title": "HTTP POST Request",
+            "type": "web-service.http_request",
+            "base_type": "activity",
+            "properties": {
+              "accept": "application/json",
+              "action_timeout": 180,
+              "allow_auto_redirect": true,
+              "allow_headers_redirect": false,
+              "body": "{\"url\":\"$workflow.definition_workflow_01YMNX6QF1N543bvHa9pYjAS1uqzzxL0CrM.input.variable_workflow_01YMNX6QTQTAM5MH6OViD9Bo9GwH4XhTSgX$\"}",
+              "content_type": "application/json",
+              "continue_on_error_status_code": false,
+              "continue_on_failure": false,
+              "description": "Needs to be changed from static body to list item",
+              "display_name": "HTTP POST Request",
+              "method": "POST",
+              "relative_url": "/api/scans",
+              "runtime_user": {
+                "target_default": true
+              },
+              "skip_execution": false,
+              "target": {
+                "use_workflow_target": true
+              }
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX6T1SMG56vhLSbwZYNA7nTN12gxu1y",
+            "name": "JSONPath Query",
+            "title": "JSONPath Query",
+            "type": "corejava.jsonpathquery",
+            "base_type": "activity",
+            "properties": {
+              "action_timeout": 180,
+              "continue_on_failure": false,
+              "display_name": "JSONPath Query",
+              "input_json": "$activity.definition_activity_01YMNX6SB873Z33kIQw52428TI5hi8CxWjs.output.response_body$\n",
+              "jsonpath_queries": [
+                {
+                  "jsonpath_query": "$.id",
+                  "jsonpath_query_name": "id",
+                  "jsonpath_query_type": "string"
+                }
+              ],
+              "skip_execution": false
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX6TOW1FI1a2qduui1ntZubErj46ZtS",
+            "name": "Set Variables",
+            "title": "Set Variables",
+            "type": "core.set_multiple_variables",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Set Variables",
+              "skip_execution": false,
+              "variables_to_update": [
+                {
+                  "variable_to_update": "$workflow.definition_workflow_01YMNX6QF1N543bvHa9pYjAS1uqzzxL0CrM.output.variable_workflow_01YMNX6QTR4W971O8LLRpntjcyosiI3WpVZ$",
+                  "variable_value_new": "$activity.definition_activity_01YMNX6T1SMG56vhLSbwZYNA7nTN12gxu1y.output.jsonpath_queries.id$"
+                }
+              ]
+            },
+            "object_type": "definition_activity"
+          }
+        ],
+        "categories": [
+          "category_1BMfMXSnJMyt5Ihqi7rWJr5N8cf"
+        ]
+      }
+    },
+    {
+      "workflow": {
+        "unique_name": "definition_workflow_01YMNX6QEAQI13OzLfj49fLlO4Ij7ifdfFY",
+        "name": "Copy(1)-Get Session Status",
+        "title": "Copy(1)-Get Session Status",
+        "type": "generic.workflow",
+        "base_type": "workflow",
+        "variables": [
+          {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "",
+              "scope": "input",
+              "name": "session-id",
+              "type": "datatype.string",
+              "is_required": true,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01YMNX6QRP82P0ly735mxskfv92cpuFaGcL",
+            "object_type": "variable_workflow"
+          },
+          {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "",
+              "scope": "output",
+              "name": "dns-remaining",
+              "type": "datatype.string",
+              "is_required": false,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01YMNX6QRPQA06gGQ1U1zF0QmOzrckB5Er8",
+            "object_type": "variable_workflow"
+          }
+        ],
+        "properties": {
+          "atomic": {
+            "is_atomic": false
+          },
+          "delete_workflow_instance": false,
+          "description": "Get DNSTwist session status to see if processing of the domain has finished",
+          "display_name": "Copy(1)-Get Session Status",
+          "runtime_user": {
+            "target_default": true
+          },
+          "target": {
+            "target_type": "web-service.endpoint",
+            "target_id": "definition_target_01X6ZIU5MZPWA5tRjyTqZvvFNbyPUWWhWom",
+            "execute_on_workflow_target": true
+          }
+        },
+        "object_type": "definition_workflow",
+        "actions": [
+          {
+            "unique_name": "definition_activity_01YMNX6S78JNO7cd5zvKT9nMoRa2MNaFAlp",
+            "name": "HTTP Request",
+            "title": "GET session status",
+            "type": "web-service.http_request",
+            "base_type": "activity",
+            "properties": {
+              "action_timeout": 180,
+              "allow_auto_redirect": true,
+              "allow_headers_redirect": false,
+              "continue_on_error_status_code": false,
+              "continue_on_failure": false,
+              "description": "pending",
+              "display_name": "GET session status",
+              "method": "GET",
+              "relative_url": "/api/scans/$workflow.definition_workflow_01YMNX6QEAQI13OzLfj49fLlO4Ij7ifdfFY.input.variable_workflow_01YMNX6QRP82P0ly735mxskfv92cpuFaGcL$",
+              "runtime_user": {
+                "target_default": true
+              },
+              "skip_execution": false,
+              "target": {
+                "use_workflow_target": true
+              }
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX6T0MCPK6bkFbDHvD1X0PAj3MfKTIf",
+            "name": "JSONPath Query",
+            "title": "JSONPath Query",
+            "type": "corejava.jsonpathquery",
+            "base_type": "activity",
+            "properties": {
+              "action_timeout": 180,
+              "continue_on_failure": false,
+              "display_name": "JSONPath Query",
+              "input_json": "$activity.definition_activity_01YMNX6S78JNO7cd5zvKT9nMoRa2MNaFAlp.output.response_body$",
+              "jsonpath_queries": [
+                {
+                  "jsonpath_query": "$.remaining",
+                  "jsonpath_query_name": "remaining",
+                  "jsonpath_query_type": "string"
+                }
+              ],
+              "skip_execution": false
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX6TPFCQ73iiIFip4MMdtIAVEhkvb2o",
+            "name": "Set Variables",
+            "title": "Set Variables",
+            "type": "core.set_multiple_variables",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Set Variables",
+              "skip_execution": false,
+              "variables_to_update": [
+                {
+                  "variable_to_update": "$workflow.definition_workflow_01YMNX6QEAQI13OzLfj49fLlO4Ij7ifdfFY.output.variable_workflow_01YMNX6QRPQA06gGQ1U1zF0QmOzrckB5Er8$",
+                  "variable_value_new": "$activity.definition_activity_01YMNX6T0MCPK6bkFbDHvD1X0PAj3MfKTIf.output.jsonpath_queries.remaining$"
+                }
+              ]
+            },
+            "object_type": "definition_activity"
+          }
+        ],
+        "categories": [
+          "category_1BMfMXSnJMyt5Ihqi7rWJr5N8cf"
+        ]
+      }
+    },
+    {
+      "workflow": {
+        "unique_name": "definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u",
+        "name": "Copy(1)-Threat Response - Observe Observables",
+        "title": "Copy(1)-Threat Response - Observe Observables",
+        "type": "generic.workflow",
+        "base_type": "workflow",
+        "variables": [
+          {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "",
+              "scope": "output",
+              "name": "results",
+              "type": "datatype.string",
+              "is_required": false,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01YMNX6R5NK7X0OzIigtAwOfVkphtsR1o9X",
+            "object_type": "variable_workflow"
+          },
+          {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "",
+              "scope": "input",
+              "name": "observables",
+              "type": "datatype.string",
+              "is_required": true,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01YMNX6R5NVF03xRvgBzLTXkXXqwGHWnOt5",
+            "object_type": "variable_workflow"
+          },
+          {
+            "schema_id": "datatype.integer",
+            "properties": {
+              "value": 0,
+              "scope": "local",
+              "name": "i",
+              "type": "datatype.integer",
+              "is_required": false,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01YMNX6R5OAIU5v29hs2rI9xHlLMKYDNzPI",
+            "object_type": "variable_workflow"
+          },
+          {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "[]",
+              "scope": "local",
+              "name": "sightings",
+              "type": "datatype.string",
+              "is_required": false,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01YMNX6R5O3PG1f7eNXKzYU3TRdqTUhPhqC",
+            "object_type": "variable_workflow"
+          },
+          {
+            "schema_id": "datatype.secure_string",
+            "properties": {
+              "value": "",
+              "scope": "local",
+              "name": "Token",
+              "type": "datatype.secure_string",
+              "is_required": false,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01YMNX6R5OL7H4ACcfm0uAkXyVJFITuGod9",
+            "object_type": "variable_workflow"
+          }
+        ],
+        "properties": {
+          "atomic": {
+            "is_atomic": false
+          },
+          "delete_workflow_instance": false,
+          "description": "Gets sightings, targets, relationship information. Investigates.\nInput must be in observable format:\n[{\n\"value\":\"example.com\",\n\"type\":\"url\"\n}]",
+          "display_name": "Copy(1)-Threat Response - Observe Observables",
+          "runtime_user": {
+            "target_default": true
+          },
+          "target": {
+            "no_target": true
+          }
+        },
+        "object_type": "definition_workflow",
+        "actions": [
+          {
+            "unique_name": "definition_activity_01YMNX6SPSZYS4v8YK1C9LoScYCZ6UHP2MV",
+            "name": "Execute Python Script",
+            "title": "Initialize variables",
+            "type": "python3.script",
+            "base_type": "activity",
+            "properties": {
+              "action_timeout": 180,
+              "continue_on_failure": false,
+              "display_name": "Initialize variables",
+              "script": "import math,json\n\ntam = len($workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.input.variable_workflow_01YMNX6R5NVF03xRvgBzLTXkXXqwGHWnOt5$)\ntotal = math.ceil(tam/50)",
+              "script_queries": [
+                {
+                  "script_query": "total",
+                  "script_query_name": "total",
+                  "script_query_type": "integer"
+                }
+              ],
+              "skip_execution": false
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX6TL8LKE1pbXq8ImRVwGEjJIMcokht",
+            "name": "Threat Response - Generate Access Token",
+            "title": "Threat Response - Generate Access Token",
+            "type": "workflow.atomic_workflow",
+            "base_type": "subworkflow",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Threat Response - Generate Access Token",
+              "runtime_user": {
+                "target_default": true
+              },
+              "skip_execution": false,
+              "target": {
+                "override_workflow_target": true,
+                "target_id": "definition_target_01IZMSUQSXQQ322hn1cq6jVmgbzS6X1NXEa",
+                "target_type": "web-service.endpoint"
+              },
+              "workflow_id": "definition_workflow_01PP75S3LTBW4420OZU3rdHWKHFnE6aC7yH",
+              "workflow_name": "Threat Response - Generate Access Token"
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX6U77G933Aype8GhpSMxLe28BARZrj",
+            "name": "Set Variables",
+            "title": "Save Authorization Token Locally",
+            "type": "core.set_multiple_variables",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Save Authorization Token Locally",
+              "skip_execution": false,
+              "variables_to_update": [
+                {
+                  "variable_to_update": "$workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.local.variable_workflow_01YMNX6R5OL7H4ACcfm0uAkXyVJFITuGod9$",
+                  "variable_value_new": "$activity.definition_activity_01YMNX6TL8LKE1pbXq8ImRVwGEjJIMcokht.output.variable_workflow_01PP75S3G7CJY6WAQr2IJC7qga2SIoE09gQ$"
+                }
+              ]
+            },
+            "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_01YMNX6UTK5ZS3IXZ3kVQmfbO5WxJ3NtPtv",
+            "name": "While Loop",
+            "title": "While there is still observables to analyse",
+            "type": "logic.while",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "While there is still observables to analyse",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "blocks": [
+              {
+                "unique_name": "definition_activity_01YMNX6VEMIXA03yWTdXsO1l0NUl1SQ7EBc",
+                "name": "Condition Branch",
+                "title": "are domains left to observe?",
+                "type": "logic.condition_block",
+                "base_type": "activity",
+                "properties": {
+                  "condition": {
+                    "left_operand": "$workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.local.variable_workflow_01YMNX6R5OAIU5v29hs2rI9xHlLMKYDNzPI$",
+                    "operator": "lt",
+                    "right_operand": "$activity.definition_activity_01YMNX6SPSZYS4v8YK1C9LoScYCZ6UHP2MV.output.script_queries.total$"
+                  },
+                  "continue_on_failure": false,
+                  "display_name": "are domains left to observe?",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity",
+                "actions": [
+                  {
+                    "unique_name": "definition_activity_01YMNX6W09TDN5fArxK9JfsoirtueNHTeYJ",
+                    "name": "Execute Python Script",
+                    "title": "Divide in chunks of 50 elements",
+                    "type": "python3.script",
+                    "base_type": "activity",
+                    "properties": {
+                      "action_timeout": 180,
+                      "continue_on_failure": false,
+                      "description": "the /observe works better with up to 50 observables",
+                      "display_name": "Divide in chunks of 50 elements",
+                      "script": "import json\n\ntemp = $workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.input.variable_workflow_01YMNX6R5NVF03xRvgBzLTXkXXqwGHWnOt5$\ni = $workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.local.variable_workflow_01YMNX6R5OAIU5v29hs2rI9xHlLMKYDNzPI$\ntotal = $activity.definition_activity_01YMNX6SPSZYS4v8YK1C9LoScYCZ6UHP2MV.output.script_queries.total$\n\nif i == total-1:\n  current1 = temp[50*i:]\nelse:\n  current1 = temp[50*i:50*(i+1)]\n\ncurrent = json.dumps(current1)\nprint(len(current))",
+                      "script_queries": [
+                        {
+                          "script_query": "current",
+                          "script_query_name": "current",
+                          "script_query_type": "string"
+                        }
+                      ],
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity"
+                  },
+                  {
+                    "unique_name": "definition_activity_01YMNX6WKSS5S4iCUBuTBjoCsr9IrNy03sG",
+                    "name": "HTTP Request",
+                    "title": "Observe Observables",
+                    "type": "web-service.http_request",
+                    "base_type": "activity",
+                    "properties": {
+                      "accept": "application/json",
+                      "action_timeout": 540,
+                      "allow_auto_redirect": true,
+                      "allow_headers_redirect": false,
+                      "body": "$activity.definition_activity_01YMNX6W09TDN5fArxK9JfsoirtueNHTeYJ.output.script_queries.current$",
+                      "content_type": "application/json",
+                      "continue_on_error_status_code": false,
+                      "continue_on_failure": true,
+                      "custom_headers": [
+                        {
+                          "name": "Authorization",
+                          "value": "Bearer $workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.local.variable_workflow_01YMNX6R5OL7H4ACcfm0uAkXyVJFITuGod9$"
+                        }
+                      ],
+                      "description": "POST to Observe the chunk of observables",
+                      "display_name": "Observe Observables",
+                      "method": "POST",
+                      "relative_url": "/iroh-enrich/observe/observables",
+                      "runtime_user": {
+                        "target_default": true
+                      },
+                      "skip_execution": false,
+                      "target": {
+                        "override_workflow_target": true,
+                        "target_id": "definition_target_01JR2Z682Y2J95D0LYQ5j0irprtyvwEMZtj"
+                      }
+                    },
+                    "object_type": "definition_activity"
+                  },
+                  {
+                    "unique_name": "definition_activity_01YMNX6XA1F8Y6S9nIzJFwH1JpCizBDQxPf",
+                    "name": "Condition Block",
+                    "title": "Was it successfull?",
+                    "type": "logic.if_else",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Was it successfull?",
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity",
+                    "blocks": [
+                      {
+                        "unique_name": "definition_activity_01YMNX6XVO4QW3zXVPygYuULLFrhAHgrC0N",
+                        "name": "Condition Branch",
+                        "title": "Successful",
+                        "type": "logic.condition_block",
+                        "base_type": "activity",
+                        "properties": {
+                          "condition": {
+                            "left_operand": "$activity.definition_activity_01YMNX6WKSS5S4iCUBuTBjoCsr9IrNy03sG.output.status_code$",
+                            "operator": "eq",
+                            "right_operand": 200
+                          },
+                          "continue_on_failure": false,
+                          "display_name": "Successful",
+                          "skip_execution": false
+                        },
+                        "object_type": "definition_activity",
+                        "actions": [
+                          {
+                            "unique_name": "definition_activity_01YMNX6YK3NNS0DJKuDRAKzRgIMkyaUAIBc",
+                            "name": "JSONPath Query",
+                            "title": "JSONPath Query",
+                            "type": "corejava.jsonpathquery",
+                            "base_type": "activity",
+                            "properties": {
+                              "action_timeout": 180,
+                              "continue_on_failure": true,
+                              "display_name": "JSONPath Query",
+                              "input_json": "$activity.definition_activity_01YMNX6WKSS5S4iCUBuTBjoCsr9IrNy03sG.output.response_body$",
+                              "jsonpath_queries": [
+                                {
+                                  "jsonpath_query": "$.data[*].data.sightings.docs[*].[?(@.targets)].targets",
+                                  "jsonpath_query_name": "targets",
+                                  "jsonpath_query_type": "string"
+                                },
+                                {
+                                  "jsonpath_query": "$.data[*].data.sightings.docs[*].[?(@.targets)].observables",
+                                  "jsonpath_query_name": "observables",
+                                  "jsonpath_query_type": "string"
+                                },
+                                {
+                                  "jsonpath_query": "$.data[*].data.sightings.docs[*].[?(@.targets)].source",
+                                  "jsonpath_query_name": "source",
+                                  "jsonpath_query_type": "string"
+                                }
+                              ],
+                              "skip_execution": false
+                            },
+                            "object_type": "definition_activity"
+                          },
+                          {
+                            "unique_name": "definition_activity_01YMNX6Z3TMAR7OUHB0dYlJS3zm9IOtX0sa",
+                            "name": "Condition Block",
+                            "title": "Are there any targets in this chunk?",
+                            "type": "logic.if_else",
+                            "base_type": "activity",
+                            "properties": {
+                              "continue_on_failure": false,
+                              "display_name": "Are there any targets in this chunk?",
+                              "skip_execution": false
+                            },
+                            "object_type": "definition_activity",
+                            "blocks": [
+                              {
+                                "unique_name": "definition_activity_01YMNX6ZH6PWY1WWRC0AUNgUxzJMOGhkVLc",
+                                "name": "Condition Branch",
+                                "title": "Yes",
+                                "type": "logic.condition_block",
+                                "base_type": "activity",
+                                "properties": {
+                                  "condition": {
+                                    "left_operand": "$activity.definition_activity_01YMNX6YK3NNS0DJKuDRAKzRgIMkyaUAIBc.output.error.code$",
+                                    "operator": "ne",
+                                    "right_operand": "400"
+                                  },
+                                  "continue_on_failure": false,
+                                  "display_name": "Yes",
+                                  "skip_execution": false
+                                },
+                                "object_type": "definition_activity",
+                                "actions": [
+                                  {
+                                    "unique_name": "definition_activity_01YMNX702A6DP1D0Msyi1kFs2yoaYybcK3q",
+                                    "name": "Execute Python Script",
+                                    "title": "Set Variable Sigthings",
+                                    "type": "python3.script",
+                                    "base_type": "activity",
+                                    "properties": {
+                                      "action_timeout": 180,
+                                      "continue_on_failure": false,
+                                      "description": "Need to remove duplicates",
+                                      "display_name": "Set Variable Sigthings",
+                                      "script": "import json\n\nobs = $activity.definition_activity_01YMNX6YK3NNS0DJKuDRAKzRgIMkyaUAIBc.output.jsonpath_queries.observables$\ntargs = $activity.definition_activity_01YMNX6YK3NNS0DJKuDRAKzRgIMkyaUAIBc.output.jsonpath_queries.targets$\nsrcs = $activity.definition_activity_01YMNX6YK3NNS0DJKuDRAKzRgIMkyaUAIBc.output.jsonpath_queries.source$\nsights = $workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.local.variable_workflow_01YMNX6R5O3PG1f7eNXKzYU3TRdqTUhPhqC$\nfor i in range(0,len(obs)):\n  nc = {'observables': obs[i],'source': srcs[i],'targets': targs[i]}\n  sights.append(nc)\n",
+                                      "script_queries": [
+                                        {
+                                          "script_query": "sights",
+                                          "script_query_name": "sights",
+                                          "script_query_type": "string"
+                                        }
+                                      ],
+                                      "skip_execution": false
+                                    },
+                                    "object_type": "definition_activity"
+                                  },
+                                  {
+                                    "unique_name": "definition_activity_01YMNX70LMONH4MW3ZoKyzHV7N7izh779eu",
+                                    "name": "Set Variables",
+                                    "title": "Set Variables",
+                                    "type": "core.set_multiple_variables",
+                                    "base_type": "activity",
+                                    "properties": {
+                                      "continue_on_failure": false,
+                                      "display_name": "Set Variables",
+                                      "skip_execution": false,
+                                      "variables_to_update": [
+                                        {
+                                          "variable_to_update": "$workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.local.variable_workflow_01YMNX6R5O3PG1f7eNXKzYU3TRdqTUhPhqC$",
+                                          "variable_value_new": "$activity.definition_activity_01YMNX702A6DP1D0Msyi1kFs2yoaYybcK3q.output.script_queries.sights$"
+                                        }
+                                      ]
+                                    },
+                                    "object_type": "definition_activity"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "unique_name": "definition_activity_01YMNX716JX4C4BRV7GXllnJ1ICjIg1IMIG",
+                            "name": "Set Variables",
+                            "title": "Increase i",
+                            "type": "core.set_multiple_variables",
+                            "base_type": "activity",
+                            "properties": {
+                              "continue_on_failure": false,
+                              "display_name": "Increase i",
+                              "skip_execution": false,
+                              "variables_to_update": [
+                                {
+                                  "variable_to_update": "$workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.local.variable_workflow_01YMNX6R5OAIU5v29hs2rI9xHlLMKYDNzPI$",
+                                  "variable_value_new": "$workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.local.variable_workflow_01YMNX6R5OAIU5v29hs2rI9xHlLMKYDNzPI$+1"
+                                }
+                              ]
+                            },
+                            "object_type": "definition_activity"
+                          }
+                        ]
+                      },
+                      {
+                        "unique_name": "definition_activity_01YMNX71P6LM530uMo1zhdcbcyAnhT5CRcJ",
+                        "name": "Condition Branch",
+                        "title": "Token expired",
+                        "type": "logic.condition_block",
+                        "base_type": "activity",
+                        "properties": {
+                          "condition": {
+                            "left_operand": "$activity.definition_activity_01YMNX6WKSS5S4iCUBuTBjoCsr9IrNy03sG.output.status_code$",
+                            "operator": "eq",
+                            "right_operand": 401
+                          },
+                          "continue_on_failure": false,
+                          "display_name": "Token expired",
+                          "skip_execution": false
+                        },
+                        "object_type": "definition_activity",
+                        "actions": [
+                          {
+                            "unique_name": "definition_activity_01YMNX72K8DB11lpjI6WxoaobzA2TLJMPND",
+                            "name": "Threat Response - Generate Access Token again",
+                            "title": "Threat Response - Generate Access Token again",
+                            "type": "workflow.atomic_workflow",
+                            "base_type": "subworkflow",
+                            "properties": {
+                              "continue_on_failure": false,
+                              "display_name": "Threat Response - Generate Access Token again",
+                              "runtime_user": {
+                                "target_default": true
+                              },
+                              "skip_execution": false,
+                              "target": {
+                                "override_workflow_target": true,
+                                "target_id": "definition_target_01IZMSUQSXQQ322hn1cq6jVmgbzS6X1NXEa",
+                                "target_type": "web-service.endpoint"
+                              },
+                              "workflow_id": "definition_workflow_01PP75S3LTBW4420OZU3rdHWKHFnE6aC7yH",
+                              "workflow_name": "Threat Response - Generate Access Token"
+                            },
+                            "object_type": "definition_activity"
+                          },
+                          {
+                            "unique_name": "definition_activity_01YMNX735TOJL3QngFPkS0JDlYIUR5FqAKL",
+                            "name": "Set Variables",
+                            "title": "Save Authorization Token Locally",
+                            "type": "core.set_multiple_variables",
+                            "base_type": "activity",
+                            "properties": {
+                              "continue_on_failure": false,
+                              "description": "Then retry chunk",
+                              "display_name": "Save Authorization Token Locally",
+                              "skip_execution": false,
+                              "variables_to_update": [
+                                {
+                                  "variable_to_update": "$workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.local.variable_workflow_01YMNX6R5OL7H4ACcfm0uAkXyVJFITuGod9$",
+                                  "variable_value_new": "$activity.definition_activity_01YMNX72K8DB11lpjI6WxoaobzA2TLJMPND.output.variable_workflow_01PP75S3G7CJY6WAQr2IJC7qga2SIoE09gQ$"
+                                }
+                              ]
+                            },
+                            "object_type": "definition_activity"
+                          }
+                        ]
+                      },
+                      {
+                        "unique_name": "definition_activity_01YMNX73RVC023rZTEpKHeVG7D1Cm8bYUgR",
+                        "name": "Condition Branch",
+                        "title": "Anything else",
+                        "type": "logic.condition_block",
+                        "base_type": "activity",
+                        "properties": {
+                          "condition": {
+                            "left_operand": {
+                              "left_operand": "$activity.definition_activity_01YMNX6WKSS5S4iCUBuTBjoCsr9IrNy03sG.output.status_code$",
+                              "operator": "ne",
+                              "right_operand": 401
+                            },
+                            "operator": "or",
+                            "right_operand": {
+                              "left_operand": "$activity.definition_activity_01YMNX6WKSS5S4iCUBuTBjoCsr9IrNy03sG.output.status_code$",
+                              "operator": "ne",
+                              "right_operand": 200
+                            }
+                          },
+                          "continue_on_failure": false,
+                          "display_name": "Anything else",
+                          "skip_execution": false
+                        },
+                        "object_type": "definition_activity",
+                        "actions": [
+                          {
+                            "unique_name": "definition_activity_01YMNX74FRSLI6mP6rp3x0o3Ba2Acnakqnk",
+                            "name": "Completed",
+                            "title": "Failed",
+                            "type": "logic.completed",
+                            "base_type": "activity",
+                            "properties": {
+                              "completion_type": "failed-completed",
+                              "continue_on_failure": false,
+                              "display_name": "Failed",
+                              "result_message": "We could not complete the web request for this observables. Error: $activity.definition_activity_01YMNX6WKSS5S4iCUBuTBjoCsr9IrNy03sG.output.error.code$ -  $activity.definition_activity_01YMNX6WKSS5S4iCUBuTBjoCsr9IrNy03sG.output.error.message$",
+                              "skip_execution": false
+                            },
+                            "object_type": "definition_activity"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "unique_name": "definition_activity_01YMNX74T485S19VvdVW3ifo7799iSC4GSf",
+            "name": "Set Variables",
+            "title": "Set final results",
+            "type": "core.set_multiple_variables",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Set final results",
+              "skip_execution": false,
+              "variables_to_update": [
+                {
+                  "variable_to_update": "$workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.output.variable_workflow_01YMNX6R5NK7X0OzIigtAwOfVkphtsR1o9X$",
+                  "variable_value_new": "$workflow.definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u.local.variable_workflow_01YMNX6R5O3PG1f7eNXKzYU3TRdqTUhPhqC$"
+                }
+              ]
+            },
+            "object_type": "definition_activity"
+          }
+        ],
+        "categories": [
+          "category_1BMfMXSnJMyt5Ihqi7rWJr5N8cf"
+        ]
+      },
+      "dependent_workflows": [
+        "definition_workflow_01PP75S3LTBW4420OZU3rdHWKHFnE6aC7yH"
+      ]
+    }
+  ],
+  "atomic_workflows": [
+    "definition_workflow_01PP75S3LTBW4420OZU3rdHWKHFnE6aC7yH"
+  ],
+  "dependent_workflows": [
+    "definition_workflow_01YMNX6QF1N543bvHa9pYjAS1uqzzxL0CrM",
+    "definition_workflow_01YMNX6QEAQI13OzLfj49fLlO4Ij7ifdfFY",
+    "definition_workflow_01YMNX6QSV1UO1JirFUmaDNfXeT30HhOp3u"
+  ]
+}
