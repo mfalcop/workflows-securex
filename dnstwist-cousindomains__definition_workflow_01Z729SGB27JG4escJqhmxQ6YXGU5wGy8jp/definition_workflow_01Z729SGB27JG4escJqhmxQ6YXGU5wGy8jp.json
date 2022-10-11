@@ -11,6 +11,19 @@
         "properties": {
           "value": "",
           "scope": "local",
+          "name": "email-response",
+          "type": "datatype.string",
+          "is_required": false,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01ZBJNYZHKNAG79vRWPcfhUTGRox4gRwt1r",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "local",
           "name": "results",
           "type": "datatype.string",
           "is_required": false,
@@ -43,19 +56,6 @@
           "is_invisible": false
         },
         "unique_name": "variable_workflow_01Z729SGH8CPT6E3TphV0tXhzF9obzvR6hq",
-        "object_type": "variable_workflow"
-      },
-      {
-        "schema_id": "datatype.string",
-        "properties": {
-          "value": "",
-          "scope": "local",
-          "name": "email-response",
-          "type": "datatype.string",
-          "is_required": false,
-          "is_invisible": false
-        },
-        "unique_name": "variable_workflow_01ZBJNYZHKNAG79vRWPcfhUTGRox4gRwt1r",
         "object_type": "variable_workflow"
       }
     ],
@@ -194,7 +194,7 @@
             "type": "workflow.sub_workflow",
             "base_type": "subworkflow",
             "properties": {
-              "continue_on_failure": false,
+              "continue_on_failure": true,
               "description": "This will return \"remaining\" number of domains to be processed and ready to return",
               "display_name": "Get Session Status",
               "input": {
@@ -213,6 +213,54 @@
               "workflow_name": "Copy(2)-Get Session Status"
             },
             "object_type": "definition_activity"
+          },
+          {
+            "unique_name": "definition_activity_020M4PL07G0187a7U8TDovb5Xa5kXLiS7Mt",
+            "name": "Condition Block",
+            "title": "Check if HTTP call was successful",
+            "type": "logic.if_else",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "Check if HTTP call was successful",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "blocks": [
+              {
+                "unique_name": "definition_activity_020M4PL07GK1U2dhXIHSzy5X26Ulc0X2D3i",
+                "name": "Condition Branch",
+                "title": "Failed",
+                "type": "logic.condition_block",
+                "base_type": "activity",
+                "properties": {
+                  "condition": {
+                    "left_operand": "$activity.definition_activity_01Z729T2HGRAU2A1Vs4NiHYVPtHtehuf63X.output.succeeded$",
+                    "operator": "ne",
+                    "right_operand": true
+                  },
+                  "continue_on_failure": false,
+                  "display_name": "Failed",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity",
+                "actions": [
+                  {
+                    "unique_name": "definition_activity_020M4PL07HWU72fakPApq4YR151ruHLxVhN",
+                    "name": "Continue",
+                    "title": "Continue to next domain",
+                    "type": "logic.continue",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Continue to next domain",
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity"
+                  }
+                ]
+              }
+            ]
           },
           {
             "unique_name": "definition_activity_01Z729T3AG4G859vmsYdBBwimaKN8SENNf2",
@@ -305,6 +353,54 @@
                       "workflow_name": ""
                     },
                     "object_type": "definition_activity"
+                  },
+                  {
+                    "unique_name": "definition_activity_020M4KW2YSJ9E62tugoL7QVYiwGMPGzVxy4",
+                    "name": "Condition Block",
+                    "title": "Check if HTTP call was successful",
+                    "type": "logic.if_else",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Check if HTTP call was successful",
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity",
+                    "blocks": [
+                      {
+                        "unique_name": "definition_activity_020M4KW39CRJP18gGUmBRSp1hzKEzuh8BaM",
+                        "name": "Condition Branch",
+                        "title": "Failed",
+                        "type": "logic.condition_block",
+                        "base_type": "activity",
+                        "properties": {
+                          "condition": {
+                            "left_operand": "$activity.definition_activity_01Z729T5E7J2P6moAZ9eckTtzjnT86ETpNI.output.succeeded$",
+                            "operator": "ne",
+                            "right_operand": true
+                          },
+                          "continue_on_failure": false,
+                          "display_name": "Failed",
+                          "skip_execution": false
+                        },
+                        "object_type": "definition_activity",
+                        "actions": [
+                          {
+                            "unique_name": "definition_activity_020M4LGZ0VZDS4TveRzL15M1EU39Y4g2aby",
+                            "name": "Continue",
+                            "title": "Continue to next domain",
+                            "type": "logic.continue",
+                            "base_type": "activity",
+                            "properties": {
+                              "continue_on_failure": false,
+                              "display_name": "Continue to next domain",
+                              "skip_execution": false
+                            },
+                            "object_type": "definition_activity"
+                          }
+                        ]
+                      }
+                    ]
                   },
                   {
                     "unique_name": "definition_activity_01Z729T65K9NR45XPZp3JOQnlWVV0xVmZQ0",
@@ -1266,19 +1362,6 @@
             "schema_id": "datatype.string",
             "properties": {
               "value": "",
-              "scope": "output",
-              "name": "SessionID",
-              "type": "datatype.string",
-              "is_required": false,
-              "is_invisible": false
-            },
-            "unique_name": "variable_workflow_01Z729SIYHWVF0ZpiSROpEfOokst7i7S5tD",
-            "object_type": "variable_workflow"
-          },
-          {
-            "schema_id": "datatype.string",
-            "properties": {
-              "value": "",
               "scope": "input",
               "name": "domain",
               "type": "datatype.string",
@@ -1287,6 +1370,19 @@
               "is_invisible": false
             },
             "unique_name": "variable_workflow_01Z729SIYIDAD5QSLLBx7jln0WUtesEJXet",
+            "object_type": "variable_workflow"
+          },
+          {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "",
+              "scope": "output",
+              "name": "SessionID",
+              "type": "datatype.string",
+              "is_required": false,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01Z729SIYHWVF0ZpiSROpEfOokst7i7S5tD",
             "object_type": "variable_workflow"
           }
         ],
@@ -1395,19 +1491,6 @@
             "schema_id": "datatype.string",
             "properties": {
               "value": "",
-              "scope": "output",
-              "name": "dns-remaining",
-              "type": "datatype.string",
-              "is_required": false,
-              "is_invisible": false
-            },
-            "unique_name": "variable_workflow_01Z729SIZ5Z8A51KKZcohk6NVZ5i9rRnDzt",
-            "object_type": "variable_workflow"
-          },
-          {
-            "schema_id": "datatype.string",
-            "properties": {
-              "value": "",
               "scope": "input",
               "name": "session-id",
               "type": "datatype.string",
@@ -1415,6 +1498,19 @@
               "is_invisible": false
             },
             "unique_name": "variable_workflow_01Z729SIZ6AFV57MsfuV9NgCg478XOUhpDi",
+            "object_type": "variable_workflow"
+          },
+          {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "",
+              "scope": "output",
+              "name": "dns-remaining",
+              "type": "datatype.string",
+              "is_required": false,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01Z729SIZ5Z8A51KKZcohk6NVZ5i9rRnDzt",
             "object_type": "variable_workflow"
           }
         ],
@@ -1518,6 +1614,45 @@
         "base_type": "workflow",
         "variables": [
           {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "",
+              "scope": "input",
+              "name": "observables",
+              "type": "datatype.string",
+              "is_required": true,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01Z729SJ7D25U0f9cZYEcFupy3okJbLJc3a",
+            "object_type": "variable_workflow"
+          },
+          {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "[]",
+              "scope": "local",
+              "name": "sightings",
+              "type": "datatype.string",
+              "is_required": false,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01Z729SJ7CQXM6tN163CHPiu4zQZ7G17Rla",
+            "object_type": "variable_workflow"
+          },
+          {
+            "schema_id": "datatype.string",
+            "properties": {
+              "value": "",
+              "scope": "output",
+              "name": "results",
+              "type": "datatype.string",
+              "is_required": false,
+              "is_invisible": false
+            },
+            "unique_name": "variable_workflow_01Z729SJ7DACM3QkxUytnOPWsYCmJQgLrjK",
+            "object_type": "variable_workflow"
+          },
+          {
             "schema_id": "datatype.secure_string",
             "properties": {
               "value": "",
@@ -1541,45 +1676,6 @@
               "is_invisible": false
             },
             "unique_name": "variable_workflow_01Z729SJ7DGXB20CnIsB1XzYtdYHWHHEguL",
-            "object_type": "variable_workflow"
-          },
-          {
-            "schema_id": "datatype.string",
-            "properties": {
-              "value": "[]",
-              "scope": "local",
-              "name": "sightings",
-              "type": "datatype.string",
-              "is_required": false,
-              "is_invisible": false
-            },
-            "unique_name": "variable_workflow_01Z729SJ7CQXM6tN163CHPiu4zQZ7G17Rla",
-            "object_type": "variable_workflow"
-          },
-          {
-            "schema_id": "datatype.string",
-            "properties": {
-              "value": "",
-              "scope": "input",
-              "name": "observables",
-              "type": "datatype.string",
-              "is_required": true,
-              "is_invisible": false
-            },
-            "unique_name": "variable_workflow_01Z729SJ7D25U0f9cZYEcFupy3okJbLJc3a",
-            "object_type": "variable_workflow"
-          },
-          {
-            "schema_id": "datatype.string",
-            "properties": {
-              "value": "",
-              "scope": "output",
-              "name": "results",
-              "type": "datatype.string",
-              "is_required": false,
-              "is_invisible": false
-            },
-            "unique_name": "variable_workflow_01Z729SJ7DACM3QkxUytnOPWsYCmJQgLrjK",
             "object_type": "variable_workflow"
           }
         ],
