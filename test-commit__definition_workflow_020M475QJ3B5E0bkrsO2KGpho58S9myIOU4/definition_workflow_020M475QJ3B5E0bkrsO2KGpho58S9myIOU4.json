@@ -20,6 +20,22 @@
       }
     },
     "object_type": "definition_workflow",
+    "actions": [
+      {
+        "unique_name": "definition_activity_020M47ZMUYBR42Pd1jo9OHNSP94pOV4hZ1E",
+        "name": "Sleep",
+        "title": "Sleep",
+        "type": "core.sleep",
+        "base_type": "activity",
+        "properties": {
+          "continue_on_failure": false,
+          "display_name": "Sleep",
+          "skip_execution": false,
+          "sleep_interval": 5
+        },
+        "object_type": "definition_activity"
+      }
+    ],
     "categories": [
       "category_1BMfMXSnJMyt5Ihqi7rWJr5N8cf"
     ]
